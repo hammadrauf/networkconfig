@@ -1,0 +1,13 @@
+---
+## defaults file for hammadrauf.networkconfig
+#
+# Network Fixed IP Config
+nw_conn_name: "System eth2"
+nw_ifname: "eth2"
+nw_ip4: "192.168.0.21"
+nw_ip4_cidr: "{{ nw_ip4 }}/24"
+nw_netmask: "255.255.255.0"
+nw_gw4: "192.168.0.1"
+nw_dns4_list:
+  - "192.168.0.1"
+  - "8.8.8.8"

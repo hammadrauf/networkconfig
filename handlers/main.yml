@@ -1,0 +1,32 @@
+---
+# handlers file for hammadrauf.networkconfig
+  # - name: "Reboot the system"
+  #   become: true
+  #   reboot:
+  #     msg: "Reboot initiated by Ansible after GUI installation."
+  #     reboot_timeout: 300
+  #   listen: reboot the system
+
+  - name: Reboot the system but dont wait at this step
+    shell: 'sleep 1 && sudo shutdown -r now "Reboot triggered by Ansible" && sleep 1'
+    async: 1
+    poll: 0
+    become: true
+    ignore_errors: true
+    listen: reboot the system
+
+  - name: Wait for server to restart
+    local_action:
+      module: wait_for
+        host="{{ nw_ip4 }}"
+        port=22
+        delay=10
+        timeout=300     
+    remote_user: "{{ su_vault_vmuser1 }}"
+    become: false
+    listen: reboot the system
+
+  - name: Refresh inventory to ensure new ip is detected in memory variables
+    meta: refresh_inventory
+    listen: reboot the system
+    

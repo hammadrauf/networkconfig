@@ -1,0 +1,15 @@
+---
+driver:
+  name: default
+  options:
+    managed: false
+    login_cmd_template: 'podman exec -ti {instance} bash'
+    ansible_connection_options:
+      ansible_connection: podman
+platforms:
+  - name: debian12
+    image: docker.io/hammadrauf/debian12:latest
+  - name: fedora40
+    image: docker.io/hammadrauf/fedora40:latest
+  - name: ubuntu
+    image: docker.io/hammadrauf/ubuntunoble:latest

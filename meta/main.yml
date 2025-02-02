@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  author: Hammad Rauf <rauf.hammad@gmail.com>
+  description: Debian/RHEL configuration of Network, particularly assigning fixed IP address.
+  company: No Company
+  license: MIT
+  min_ansible_version: "2.1"
+  role_name: networkconfig
+  namespace: hammadrauf
+  platforms:
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - network
+    - networkconfig
+    - "fixed IP"
+
+dependencies: []
+
