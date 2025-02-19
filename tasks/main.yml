@@ -163,9 +163,10 @@
     #     name: networking
     #     state: restarted
     #   when: ansible_os_family == 'Debian' and (p.stat.isdir is not defined or not p.stat.isdir)
-    - name: Flushing Interface
-      become: yes
-      shell: sudo ip addr flush "{{ nw_ifname }}"
+
+    # - name: Flushing Interface
+    #   become: yes
+    #   shell: sudo ip addr flush "{{ nw_ifname }}"
 
     - name: Restart systemd-networkd
       systemd:

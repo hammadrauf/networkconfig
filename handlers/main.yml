@@ -15,18 +15,18 @@
     ignore_errors: true
     listen: reboot the system
 
-  - name: Wait for server to restart
-    local_action:
-      module: wait_for
-        host="{{ nw_ip4 }}"
-        port=22
-        delay=10
-        timeout=300     
-    remote_user: "{{ su_vault_vmuser1 }}"
-    become: false
-    listen: reboot the system
+  # - name: Wait for server to restart
+  #   local_action:
+  #     module: wait_for
+  #       host="{{ nw_ip4 }}"
+  #       port=22
+  #       delay=10
+  #       timeout=300     
+  #   remote_user: "{{ su_vault_vmuser1 }}"
+  #   become: false
+  #   listen: reboot the system
 
-  - name: Refresh inventory to ensure new ip is detected in memory variables
-    meta: refresh_inventory
-    listen: reboot the system
+  # - name: Refresh inventory to ensure new ip is detected in memory variables
+  #   meta: refresh_inventory
+  #   listen: reboot the system
     
