@@ -37,7 +37,37 @@ You may have to split your playbook into 2 playbooks and use them as below:
 ```
 
 ## Detailed Example Usage
-  
+
+This Role does not work well with Vagrantfile, because after network IP change and restart, vagrant fails to connect to vm again. The fix is to use a Shell/Bash script to manually invoke ansible on 2 playbooks, each having old IP and new IP respectively.  
+
+
+Main Shell Script - ./environment-setup.sh
+```
+#!/bin/bash
+export ANSIBLE_CONFIG="$(pwd)/ansible.cfg"
+vagrant up
+echo "- Vagrant provisioned bare VM in VirtualBox."
+echo "Sleeping for 25 seconds before 1st part of Ansible playbook..."
+sleep 25
+ansible-playbook -u vagrant --connection-password-file='./connection-password-file.txt' --vault-password-file='./vars/.vault_pass' A_pre_ip_change.yml
+echo "Sleeping for 70 seconds before 2nd part of Ansible playbook..."
+sleep 70
+ansible-playbook -u vagrant --connection-password-file='./connection-password-file.txt' --vault-password-file='./vars/.vault_pass' B_post_ip_change.yml
+echo "Environment setup completed."
+```
+
+Tear-down Shell Script - ./environment-destroy.sh
+```
+#!/bin/bash
+echo "Destroying Vagrant created VM from VirtualBox..."
+vagrant destroy -f
+echo "Removing machine IDs from SSH cache/known_hosts ..."
+ssh-keygen -f "~/.ssh/known_hosts" -R "192.168.56.6"
+ssh-keygen -f "~/.ssh/known_hosts" -R "192.168.144.1"
+ssh-keygen -f "~/.ssh/known_hosts" -R "192.168.0.21"
+```
+
+
 Vagrant File - ./Vagrantfile
 ```
 # -*- mode: ruby -*-
@@ -52,30 +82,7 @@ Vagrant.configure("2") do |config|
     end
   
     config.vm.provision "file", source: "/home/#{ENV['USER']}/.ssh/id_rsa.pub", destination: "~/.ssh/me.pub"
-    config.vm.provision :ansible do |ansible|
-      ansible.playbook = "main.yml"
-      ansible.raw_arguments = [
-       "--vault-password-file=./vars/.vault_pass"
-      ]
-    end
-  end
-  
-```
-  
-Main Playbook - ./main.yml:
-```
----
-###########################
-# Ansible Playbook: Roles - main.yml
-#   Creates WebNode by orchestrating diffrent roles and tasks.
-# Source Repository: https://github.com/????
-###########################
-
-- name: Get 1st playbook and play it.
-  ansible.builtin.import_playbook: A_pre_ip_change.yml
-
-- name: Get 2nd playbook and play it.
-  ansible.builtin.import_playbook: B_post_ip_change.yml
+  end  
 ```
   
 Playbook 'A' - ./A_pre_ip_change.yml:
@@ -126,7 +133,6 @@ Playbook 'B' - ./B_post_ip_change.yml:
 ###########################
 - name: Playbook Test Roles - B_post_ip_change.yml
   hosts: debiannewip
-  remote_user: "adminuser"
   vars_files:
     - ./vars/vars.yml
     - ./vars/secrets.yml
